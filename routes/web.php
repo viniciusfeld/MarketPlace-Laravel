@@ -4,11 +4,15 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductPhotoController;
 use App\Http\Controllers\Admin\StoreController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Models\ProductPhoto;
 use Illuminate\Support\Facades\Route;
 use \App\Models\Store;
 use Database\Factories\CategoryFactory;
+
+
 
 
 /*
@@ -23,8 +27,25 @@ use Database\Factories\CategoryFactory;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/product/{slug}', [HomeController::class, 'single'])->name('product.single');
+Route::get('/category/{slug}', [\App\Http\Controllers\CategoryController::class, 'single'])->name('category.single');
+Route::get('/store/{slug}', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.single');
 
-Route::get('/model', function(){
+
+Route::prefix('cart')->name('cart.')->group(function(){
+
+    Route::post('add', [CartController::class, 'add'])->name('add');
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::get('remove/{slug}', [CartController::class, 'remove'])->name('remove');
+    Route::get('cancel', [CartController::class, 'cancel'])->name('cancel');
+
+});
+Route::prefix('checkout')->name('checkout.')->group(function(){
+
+    Route::get('/', [CheckoutController::class, 'index'])->name('index');
+});
+
+
 
    // $user = new \App\Models\User();
    // $user = \App\Models\User::find(7);
@@ -133,9 +154,6 @@ Route::get('/model', function(){
 //$product = \App\Models\Product::find(40);
 //dd/($product->categories()->detach([1]));
 
-});
-
-Route::get('/home', function() {})->name('home');
 
 Route::group(['middleware'=> ['auth']], function()
 {
@@ -152,7 +170,7 @@ Route::group(['middleware'=> ['auth']], function()
             
             Route::resource('/stores', StoreController::class);
             Route::resource('/products', ProductController::class);
-            Route::resource('/categories', CategoryController::class);
+            Route::resource('/categories', App\Http\Controllers\Admin\CategoryController::class);
             
             Route::post('/photos/remove', [ProductPhotoController::class, 'delete'])->name('photos.remove');   
         });
@@ -164,3 +182,7 @@ Route::group(['middleware'=> ['auth']], function()
 Auth::routes();
 
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::get('/model', function(){
+});

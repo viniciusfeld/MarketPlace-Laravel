@@ -17,7 +17,7 @@ trait UploadTrait{
             }
         }else{
             
-            $uploadedImages[] = $images->store('logo', 'public');
+            $uploadedImages = $images->store('logo', 'public');
         }
     
         return $uploadedImages;
